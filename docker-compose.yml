@@ -1,6 +1,21 @@
 version: "3.9"
 
 services:
+  db:
+    image: mysql:8
+    container_name: bagisto-db
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_DATABASE: "bagisto"
+      MYSQL_USER: "bagisto"
+      MYSQL_PASSWORD: "TecnologiaAmas3027@@"
+      MYSQL_ROOT_PASSWORD: "TecnologiaAmasCol@3027#@"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - bagisto_net
+    restart: unless-stopped
+
   bagisto-app:
     build:
       context: ./bagisto
@@ -16,19 +31,19 @@ services:
       DB_PORT: "3306"
       DB_DATABASE: "bagisto"
       DB_USERNAME: "bagisto"
-      DB_PASSWORD: "TecnologiaAmas3027@@"
+      DB_PASSWORD: "TecnologiaAmas3027@@"   # <- evita var no definida
       CACHE_DRIVER: "redis"
       QUEUE_CONNECTION: "redis"
       SESSION_DRIVER: "redis"
       REDIS_HOST: "redis"
       REDIS_PORT: "6379"
     volumes:
-      - app_code:/var/www/html 
+      - app_code:/var/www/html
       - bagisto_storage:/var/www/html/storage
       - bagisto_uploads:/var/www/html/public/storage
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_started         # <- YA NO exige healthy
       redis:
         condition: service_started
     networks:
@@ -41,7 +56,7 @@ services:
     container_name: bagisto-web
     volumes:
       - app_code:/var/www/html:ro
-      - ./nginx:/etc/nginx/conf.d:ro 
+      - ./nginx:/etc/nginx/conf.d:ro
       - bagisto_uploads:/var/www/html/public/storage
     depends_on:
       - bagisto-app
@@ -57,27 +72,6 @@ services:
       - bagisto_net
     restart: unless-stopped
 
-  db:
-    image: mysql:8
-    container_name: bagisto-db
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    environment:
-      MYSQL_DATABASE: "bagisto"
-      MYSQL_USER: "bagisto"
-      MYSQL_PASSWORD: "TecnologiaAmas3027@@"
-      MYSQL_ROOT_PASSWORD: "TecnologiaAmasCol@3027#@"
-    volumes:
-      - db_data:/var/lib/mysql
-    networks:
-      - bagisto_net
-    restart: unless-stopped
-    healthcheck:   # ⬅️ AÑADIR
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -p\"TecnologiaAmasCol@3027#@\" || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 120
-      start_period: 180s
-
   redis:
     image: redis:alpine
     container_name: bagisto-redis
@@ -86,13 +80,15 @@ services:
     restart: unless-stopped
 
   queue:
-    depends_on:
-      - bagisto-app
-      - redis
     image: alpine:3.20
     container_name: bagisto-queue
     working_dir: /var/www/html
     command: sh -c "apk add --no-cache php82-cli php82-phar php82-openssl php82-redis && while true; do php artisan queue:work --tries=3 --sleep=3; done"
+    depends_on:
+      bagisto-app:
+        condition: service_started
+      redis:
+        condition: service_started
     volumes:
       - ./bagisto:/var/www/html
       - bagisto_storage:/var/www/html/storage
