@@ -45,7 +45,7 @@ services:
       - bagisto-app
     labels:
       - traefik.enable=true
-      - traefik.http.routers.shop.rule=Host(`${SHOP_HOST}`)
+      - traefik.http.routers.shop.rule=Host("amas.amaslohaceposible.cloud")
       - traefik.http.routers.shop.entrypoints=websecure
       - traefik.http.routers.shop.tls.certresolver=le
       - traefik.http.services.shop.loadbalancer.server.port=80
