@@ -14,11 +14,11 @@ ENV COMPOSER_ALLOW_SUPERUSER=1 \
 WORKDIR /var/www/html
 
 # Descarga del código como tar.gz (rama por defecto). Cambia BAGISTO_REF si quieres una tag (p.ej. v2.2.0)
-ARG BAGISTO_REF=main
-RUN curl -L "https://codeload.github.com/bagisto/bagisto/tar.gz/refs/heads/${BAGISTO_REF}" \
+ARG BAGISTO_REF=v2.3.0
+RUN curl -fsSL "https://codeload.github.com/bagisto/bagisto/tar.gz/refs/tags/${BAGISTO_REF}" \
   | tar -xz --strip-components=1 \
  && composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-progress
-
+ 
 RUN chown -R www-data:www-data /var/www/html \
  && find storage -type d -exec chmod 775 {} \; \
  && find bootstrap/cache -type d -exec chmod 775 {} \;
