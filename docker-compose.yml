@@ -27,8 +27,10 @@ services:
       - bagisto_storage:/var/www/html/storage
       - bagisto_uploads:/var/www/html/public/storage
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - traefik_proxy
       - bagisto_net
@@ -62,8 +64,8 @@ services:
     environment:
       MYSQL_DATABASE: "bagisto"
       MYSQL_USER: "bagisto"
-      MYSQL_PASSWORD: "${DB_PASSWORD}"
-      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MYSQL_PASSWORD: "TecnologiaAmas3027@@"
+      MYSQL_ROOT_PASSWORD: "TecnologiaAmasCol@3027#@"
     volumes:
       - db_data:/var/lib/mysql
     networks:
