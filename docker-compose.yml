@@ -23,6 +23,7 @@ services:
       REDIS_HOST: "redis"
       REDIS_PORT: "6379"
     volumes:
+      - app_code:/var/www/html 
       - bagisto_storage:/var/www/html/storage
       - bagisto_uploads:/var/www/html/public/storage
     depends_on:
@@ -37,6 +38,7 @@ services:
     image: nginx:alpine
     container_name: bagisto-web
     volumes:
+      - app_code:/var/www/html:ro
       - ./nginx:/etc/nginx/conf.d:ro 
       - bagisto_uploads:/var/www/html/public/storage
     depends_on:
@@ -90,6 +92,7 @@ services:
     restart: unless-stopped
 
 volumes:
+  app_code:
   db_data:
   bagisto_storage:
   bagisto_uploads:
