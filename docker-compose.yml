@@ -9,7 +9,7 @@ services:
     environment:
       APP_NAME:"Bagisto"
       APP_ENV:"production"
-      APP_KEY: ""
+      APP_KEY:""
       APP_DEBUG:"false"
       APP_URL:"https://${SHOP_HOST}"
       DB_HOST:"db"
