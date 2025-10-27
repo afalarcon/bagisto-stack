@@ -11,7 +11,7 @@ services:
       APP_ENV: "production"
       APP_KEY: ""
       APP_DEBUG: "false"
-      APP_URL: "https://${SHOP_HOST}"
+      APP_URL: "https://amas.amaslohaceposible.cloud"
       DB_HOST: "db"
       DB_PORT: "3306"
       DB_DATABASE: "bagisto"
@@ -72,7 +72,7 @@ services:
       - bagisto_net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${DB_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-pTecnologiaAmasCol@3027#@"]
       interval: 5s
       timeout: 3s
       retries: 30
